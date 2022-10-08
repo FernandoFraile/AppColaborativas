@@ -3,6 +3,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+
 public class threadReceive extends Thread{
 
     private InetAddress group;
@@ -23,23 +24,27 @@ public class threadReceive extends Thread{
             DatagramPacket mIn = new DatagramPacket(buffer,buffer.length);
 
             sock.receive(mIn);
+
             flag=mIn.getLength();
-            while (flag<2){ //Se comprueba si el mensaje que le llega es un numero o la palabra bingo
+            while (flag==2){ //Se comprueba si el mensaje que le llega es un numero o la palabra bingo
                 sock.receive(mIn);
                 flag=mIn.getLength();
 
             }
+            Servidor.DetenerHilo=1; //Se cambia la variable global para detener el hilo que envia las bolas
 
-            System.out.println("Mensaje recibido: " +  new String(mIn.getData()));
+            System.out.println("Hay ganador del bingo!! ");
 
 
         }catch (IOException e){
             System.out.println("IO: " + e.getMessage());
         }finally {
             if(!sock.isClosed()){
-                System.out.println("threadReceive cierra el socket");
-                sock.close();
+                if(sock!= null){
+                    System.out.println("threadReceive cierra el socket");
 
+                    sock.close();
+                }
 
             }
         }

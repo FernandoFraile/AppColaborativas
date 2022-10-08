@@ -27,25 +27,39 @@ public class threadSend extends Thread {
         // con el fin de que no se repitan en la secuecuencia.
         int min_val=1;
         int max_val=90; //Valores mínimmo y máximo que puede haber en el bingo
-        byte[] mBytes = new byte[1];
+        byte[] mBytes = null;
         Date semilla= new Date();
         Random rand = new Random(semilla.getTime());
         int bola; //Variable para enviar el número que sale
         int flag=0;
+        String bolaS;
+        int i=0; //Para bucles
 
         try{
             //Creamos el byte que se va a enviar con el numero aleatorio que se ha generado
             
             bola = min_val + rand.nextInt((max_val - min_val) + 1);
-            mBytes[0] = (byte) bola;
-            //DatagramPacket mOut = new DatagramPacket(mBytes,mensaje.length(),group,sock.getLocalPort());
-            DatagramPacket mOut = new DatagramPacket(mBytes,mBytes.length,group,6789);
+            //Se almacenan los datos como enteros, para que sea más cómodo realizar la comprobación de si están.
+            //Posteriormente se hará el cambio a string par enviarlo y añadir el 0 a la izquierda si es necesario
+            numeros.add(bola);
+            if(bola<10){
+                bolaS="0"+ String.valueOf(bola);
+            }
+            else {
+                bolaS = String.valueOf(bola);
+            }
 
+            mBytes = bolaS.getBytes();
+            DatagramPacket mOut = new DatagramPacket(mBytes,mBytes.length,group,6789);
+            System.out.println("Numero extraido: " + new String(mOut.getData()));
+
+
+            sock.send(mOut);
 
 
             //Empieza a sacar las 90 bolas (89 porque ya se indroduce una para hacer la comprobacion del array de numeros)
-            for(int i=0;i<90;i++){
-                Thread.sleep(10);
+            while(i<89 && Servidor.DetenerHilo==0){
+
 
                 flag=0;
                 while(flag==0){
@@ -56,16 +70,27 @@ public class threadSend extends Thread {
                         flag=1;
                     }
 
+
                 }
-                mBytes[0]= (byte) bola;
+                if(bola<10){
+                    bolaS="0"+ String.valueOf(bola);
+                }
+                else{
+                    bolaS = String.valueOf(bola);
+                }
+                mBytes = bolaS.getBytes();
                 mOut.setData(mBytes);
 
-                System.out.println( (int) mOut.getData()[0]);
-                sock.send(mOut);
+                System.out.println("Numero extraida: " + new String(mOut.getData()));
 
+                sock.send(mOut);
+                i++;
+                Thread.sleep(100);
 
             }
-            System.out.println("Acavb");
+
+            //No debería llegar nunca a esta situacion, pero por si acaso se notifica por pantalla
+            System.out.println("Se han extraido todas las bolas");
 
 
         }catch (IOException e){
@@ -74,9 +99,12 @@ public class threadSend extends Thread {
             System.out.println("InterruptedExceptioon: " + e.getMessage());
         }finally {
             if(!sock.isClosed()){
-                System.out.println("threadSend cierra el socket");
+                if(sock!= null){
+                    System.out.println("threadSend cierra el socket");
 
-                sock.close();
+                    sock.close();
+                }
+
             }
         }
 

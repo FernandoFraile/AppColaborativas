@@ -8,8 +8,8 @@ public class Cliente{
     public static void main(String[] args){
         MulticastSocket sock = null;
         byte[] buffer = new byte[10];
-        ArrayList<Integer> secuencia=new ArrayList<Integer>(); //Variable para almacenar la secuencia de cada cliente
-        Integer aux ;
+        ArrayList<String> secuencia=new ArrayList<>(); //Variable para almacenar la secuencia de cada cliente
+        Integer aux ;String num; //Para crear la secuencia
         int min_val=1;
         int max_val=90; //Valores mínimmo y máximo que puede haber en el bingo
         Date semilla= new Date();
@@ -18,42 +18,66 @@ public class Cliente{
         try{
 
             //Se genera la secuencia que va a tener el cliente para el bingo
-            System.out.println("Secuencia: ");
             //Se añaden los numeros a la secuencia,
 
 
             for(int i=0;i<15;i++){
                 aux= min_val + rand.nextInt((max_val - min_val) + 1);
-                while(secuencia.contains(aux)){ //De este modo se evita que se repitan los numeros en la secuencia
-                    aux= min_val + rand.nextInt((max_val - min_val) + 1);
+                if(aux<10){
+                    num="0"+ String.valueOf(aux);
                 }
-                secuencia.add(aux);
+                else {
+                    num= String.valueOf(aux);
+                }
+                while(secuencia.contains(num)){ //De este modo se evita que se repitan los numeros en la secuencia
+                    aux= min_val + rand.nextInt((max_val - min_val) + 1);
+                    if(aux<10){
+                        num="0"+ String.valueOf(aux);
+                    }
+                    else {
+                        num= String.valueOf(aux);
+                    }
+                }
+                secuencia.add(num);
 
             }
-            for(Integer elem : secuencia){
-                System.out.println(elem.toString());
+            System.out.print("Carton: ");
+
+            for(String elem : secuencia){
+                System.out.print(elem+" ");
             }
+            System.out.print("\n");
 
             InetAddress group = InetAddress.getByName("225.0.0.100");
             sock = new MulticastSocket(6789);
             sock.joinGroup(group);
             DatagramPacket mIn = new DatagramPacket(buffer,buffer.length);
-            byte [] mCantar = new String("bingo").getBytes();
+            byte [] mCantar = ("bingo").getBytes();
             DatagramPacket mOut = new DatagramPacket(mCantar,mCantar.length,group,6789);
 
             while(!secuencia.isEmpty() && flag==0){
                 sock.receive(mIn);
                 //Se ve si el mensaje recibido es la palabra bingo o un numero. Si no es un numero, sale del bucle
                 if(mIn.getLength()>2){
+                    System.out.println("Otro participante ha ganado el bingo...");
                     flag=1;
                 }
                 else{
-                    System.out.println("Mensaje recibido: " + (int) mIn.getData()[0]);
-                    if(secuencia.contains((int) mIn.getData()[0])){
-                        secuencia.remove((Integer) (int) mIn.getData()[0]);
-                        System.out.println("Numero de la secuencia eliminado: "+ (int) mIn.getData()[0]);
+                    System.out.println("Ha salido el : " + new String(mIn.getData()).trim());
+                    if(secuencia.contains(new String(mIn.getData()).trim())){
+                        System.out.println("Coindicendia de un numero");
+                        secuencia.remove(new String(mIn.getData()).trim());
+                        System.out.print("Carton: ");
+                        for(String elem : secuencia){
+                            System.out.print(elem+" ");
+                        }
+                        System.out.print("\n");
+                        secuencia.remove(new String(mIn.getData()).trim());
+
                     }
+
                 }
+
 
 
             }
@@ -61,7 +85,7 @@ public class Cliente{
             //Cuando acabe el bucle es que ha acabado el carton, por lo que puede cantar.
             //Si el flag es 0, el cliente es el ganador, si no es otro, por lo que no envia el mensaje de ganador
             if(flag==0){
-                System.out.println("El cliente va a cantar bingo");
+                System.out.println("Ganador del bingo!!!!!");
                 sock.send(mOut);
             }
 
@@ -74,7 +98,11 @@ public class Cliente{
         }catch (IOException e){
             System.out.println("IO: " + e.getMessage());
         }finally {
-            if(sock!= null) sock.close();
+            if(sock!= null){
+                System.out.println("El cliente cierra el socket");
+                sock.close();
+            }
+
         }
     }
 

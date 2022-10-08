@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e70b8e2f-643e-41fb-b561-f10599368ee1" name="Changes" comment="Primera versión de la práctica">
-      <change afterPath="$PROJECT_DIR$/src/threadReceive.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/threadSend.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Cliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Cliente.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Servidor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Servidor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/threadReceive.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/threadReceive.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/threadSend.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/threadSend.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +36,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/home/fernando/IdeaProjects/Ejercicio3ASR/Ejercicio.py"
+    "last_opened_file_path": "/home/fernando/ComDis/Practia2"
   }
 }]]></component>
   <component name="RunManager" selected="Application.Servidor">

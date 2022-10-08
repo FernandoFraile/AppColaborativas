@@ -1,11 +1,10 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Date;
+
 
 public class Servidor {
 
+    public static int DetenerHilo=0;
     public static void main(String[] args){
         MulticastSocket sock = null;
 
