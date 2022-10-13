@@ -39,11 +39,16 @@ public class threadReceive extends Thread{
         }catch (IOException e){
             System.out.println("IO: " + e.getMessage());
         }finally {
-            if(!sock.isClosed()){
+            if(!sock.isClosed()){ //Se comprueba si la conexion ha sido cerrada por el otro hilo
                 if(sock!= null){
-                    System.out.println("threadReceive cierra el socket");
+                    try{
+                        sock.leaveGroup(group);
+                        System.out.println("threadReceive cierra el socket");
+                        sock.close();
+                    }catch (IOException e){
+                        System.out.println("IO: " + e.getMessage());
+                    }
 
-                    sock.close();
                 }
 
             }

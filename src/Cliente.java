@@ -15,6 +15,7 @@ public class Cliente{
         Date semilla= new Date();
         Random rand = new Random(semilla.getTime());
         int flag=0;
+        InetAddress group=null;
         try{
 
             //Se genera la secuencia que va a tener el cliente para el bingo
@@ -41,23 +42,26 @@ public class Cliente{
                 secuencia.add(num);
 
             }
+            System.out.println("---------------------------------------------------------");
             System.out.print("Carton: ");
-
             for(String elem : secuencia){
                 System.out.print(elem+" ");
             }
             System.out.print("\n");
+            System.out.println("---------------------------------------------------------");
 
-            InetAddress group = InetAddress.getByName("225.0.0.100");
+            //Se realiza la conexion
+            group = InetAddress.getByName("225.0.0.100");
             sock = new MulticastSocket(6789);
             sock.joinGroup(group);
             DatagramPacket mIn = new DatagramPacket(buffer,buffer.length);
-            byte [] mCantar = ("bingo").getBytes();
+            byte [] mCantar = ("bingo").getBytes(); //Mensaje que se va a enviar si el cliente gana el bingo
             DatagramPacket mOut = new DatagramPacket(mCantar,mCantar.length,group,6789);
 
             while(!secuencia.isEmpty() && flag==0){
                 sock.receive(mIn);
                 //Se ve si el mensaje recibido es la palabra bingo o un numero. Si no es un numero, sale del bucle
+                //Ya que es que ha recibido la palabra bingo y otro cliente ha ganado
                 if(mIn.getLength()>2){
                     System.out.println("Otro participante ha ganado el bingo...");
                     flag=1;
@@ -65,13 +69,16 @@ public class Cliente{
                 else{
                     System.out.println("Ha salido el : " + new String(mIn.getData()).trim());
                     if(secuencia.contains(new String(mIn.getData()).trim())){
-                        System.out.println("Coindicendia de un numero");
+                        System.out.println("Coincide un numero!!!");
                         secuencia.remove(new String(mIn.getData()).trim());
+                        System.out.println("---------------------------------------------------------");
                         System.out.print("Carton: ");
+
                         for(String elem : secuencia){
                             System.out.print(elem+" ");
                         }
                         System.out.print("\n");
+                        System.out.println("---------------------------------------------------------");
                         secuencia.remove(new String(mIn.getData()).trim());
 
                     }
@@ -88,9 +95,7 @@ public class Cliente{
                 System.out.println("Ganador del bingo!!!!!");
                 sock.send(mOut);
             }
-
-
-
+            sock.leaveGroup(group);
 
 
         }catch (SocketException e){

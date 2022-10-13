@@ -51,15 +51,15 @@ public class threadSend extends Thread {
 
             mBytes = bolaS.getBytes();
             DatagramPacket mOut = new DatagramPacket(mBytes,mBytes.length,group,6789);
-            System.out.println("Numero extraido: " + new String(mOut.getData()));
+            System.out.println("Bola extraida: " + new String(mOut.getData()));
 
 
             sock.send(mOut);
+            Thread.sleep(1000);
 
 
             //Empieza a sacar las 90 bolas (89 porque ya se indroduce una para hacer la comprobacion del array de numeros)
             while(i<89 && Servidor.DetenerHilo==0){
-
 
                 flag=0;
                 while(flag==0){
@@ -70,9 +70,8 @@ public class threadSend extends Thread {
                         flag=1;
                     }
 
-
                 }
-                if(bola<10){
+                if(bola<10){ //Se le añade un cero a la izquierda si es un numero menor que 10
                     bolaS="0"+ String.valueOf(bola);
                 }
                 else{
@@ -81,16 +80,15 @@ public class threadSend extends Thread {
                 mBytes = bolaS.getBytes();
                 mOut.setData(mBytes);
 
-                System.out.println("Numero extraida: " + new String(mOut.getData()));
+                System.out.println("Bola extraida: " + new String(mOut.getData()));
 
                 sock.send(mOut);
                 i++;
-                Thread.sleep(100);
+                Thread.sleep(1000);
 
             }
+            Servidor.DetenerHilo=1;
 
-            //No debería llegar nunca a esta situacion, pero por si acaso se notifica por pantalla
-            System.out.println("Se han extraido todas las bolas");
 
 
         }catch (IOException e){
@@ -98,11 +96,14 @@ public class threadSend extends Thread {
         }catch (InterruptedException e) {
             System.out.println("InterruptedExceptioon: " + e.getMessage());
         }finally {
-            if(!sock.isClosed()){
-                if(sock!= null){
-                    System.out.println("threadSend cierra el socket");
+            if(!sock.isClosed()){ //Se comprueba si la conexion ha sido cerrada por el otro hilo
 
+                try{
+                    sock.leaveGroup(group);
+                    System.out.println("threadReceive cierra el socket");
                     sock.close();
+                }catch (IOException e){
+                    System.out.println("IO: " + e.getMessage());
                 }
 
             }
